@@ -1,0 +1,15 @@
+ul.sugestion-list{
+
+  list-style: none;
+  position: absolute;
+  width: 100%;
+  top:40px;
+  left: 0;
+  padding:0
+}
+
+ul.sugestion-list li:hover{
+
+  background-color: #aaf;
+  cursor: pointer;
+}
