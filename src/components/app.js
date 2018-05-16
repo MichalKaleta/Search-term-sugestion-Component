@@ -4,42 +4,58 @@ import jsonp from 'jsonp';
 export default class App extends Component {
   constructor(){
     super(); 
-    this.state = {  cities : [] };
+    this.state = { 
+      term: '',
+      cities : [] };
+    }
 
-  }
-
-  fillList(city){
-    
+  fillList(city, index){
+  
     return (
-        <li className="list-group-item list-group-item-action " >{ city }</li>
+        <li key ={index} 
+            className="list-group-item list-group-item-action" 
+            onClick= { () => this.setState( { term: city } ) } >
+          { city }
+        </li>
+   
       )   
   }
 
-  onInputChange(value){
+  onInputChange(ev){
+
+    var value = ev.target.value;
+    this.setState( { term: value } )
     jsonp("http://gd.geobytes.com/AutoCompleteCity?callback?&filter=?&q="+value, null, (err, data) => {
       if (err) {
-        console.error(err.message);
+         console.error(err.message);
       } else {
-        console.log(data)
-         this.setState(  { cities : data } )
+         data.length = 5;
+         this.setState(  {  cities: data  } )
       }
     });
   }
 
   render() {  
+
     return (
         <div>
           <form className="form-inline">
             <div className ="form-group position-relative">
              
-              <input type="text" className="form-control" name ='city'id="city" placeholder="City Name"
-                      onKeyUp = {  ev => this.onInputChange(ev.target.value)   } />   
-                  <ul className='sugestion-list'>
-                    { this.state.cities.map(city => this.fillList(city) )  }
-                  </ul>
-            </div>
-                <button type="submit" className="btn btn-primary mb-2"
-                        onClick ={ ev => ev.preventDefault() }> Search </button>
+              <input type="text" className="form-control" name ='city' placeholder="City Name"
+                     value= {this.state.term}
+                     onChange = { ev => {  this.onInputChange(ev) } }
+                       />   
+                  <ul className='sugestion-list'> {
+                          this.state.cities
+                          .filter( city => city!=='%s' )
+                          .map( (city,index) => this.fillList(city,index) )  
+                 }</ul>
+                  <button type="submit" className="btn btn-primary"
+                          onClick ={ ev => ev.preventDefault() }> 
+                    Search
+                  </button>
+            </div>      
           </form>
       </div>
     );
